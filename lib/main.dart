@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myprivatenotes/views/login_view.dart';
 import 'package:myprivatenotes/views/register_view.dart';
+import 'package:myprivatenotes/views/verify_email_view.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login/' : (context) => const LoginView(),
         '/Register/' : (context) => const RegisterView(),
-        '/VerifiyEmail/' : (context) => const RegisterView(),
+        '/VerifiyEmail/' : (context) => const VerifyEmailView(),
 
       },
     );
@@ -43,8 +44,19 @@ class HomePage extends StatelessWidget {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-              /* final user = FirebaseAuth.instance.currentUser;
-              final emailVerified = user?.emailVerified ?? false;
+              final user = FirebaseAuth.instance.currentUser;
+              if (user != null){
+                if(user.emailVerified){
+                  print('email verified');
+                  return const Text('done');
+                }
+                else{
+                  return const VerifyEmailView();
+
+                }
+              }
+              else {return const LoginView();}
+             /* final emailVerified = user?.emailVerified ?? false;
               if(emailVerified){
                 print('You are a verified user');
                 return const Text('Done');
@@ -52,7 +64,7 @@ class HomePage extends StatelessWidget {
                 print('you need to verify your email first');
                 return VerifyEmailView() ;
               }*/
-                return const LoginView();
+
               default:
                 return const CircularProgressIndicator();
             }
