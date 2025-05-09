@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28226275088",
+    "project_id": "mynotes-flutter-aminekoubaa",
+    "storage_bucket": "mynotes-flutter-aminekoubaa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28226275088:android:1f746fc9c03e86d781c795",
+        "android_client_info": {
+          "package_name": "com.example.myprivatenotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUMhYh4PxDmmP3ppTj46sC3XAL6Hv0cTE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
