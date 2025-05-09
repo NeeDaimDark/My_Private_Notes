@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myprivatenotes/firebase_options.dart';
 import 'package:myprivatenotes/views/register_view.dart';
+import 'dart:developer' as devtools show log;
+
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -31,6 +33,8 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
+        backgroundColor: Colors.blue,
+
       ),
       body: Column(
         children: [
@@ -62,16 +66,16 @@ class _LoginViewState extends State<LoginView> {
                     email: email,
                     password: password
                 );
-                print(userCredential);
+               devtools.log(userCredential.toString());
               }on FirebaseAuthException catch (e){
                 if(e.code == 'user-not-found') {
-                  print('User not found');
+                  devtools.log('User not found');
                 }
                 else if (e.code == 'wrong-password') {
-                  print('Wrong Password');
+                  devtools.log('Wrong Password');
                 }
                 else  if (e.code == 'invalid-credential'){
-                  print('wrong email or password');
+                  devtools.log('wrong email or password');
                 }
               }
             },
