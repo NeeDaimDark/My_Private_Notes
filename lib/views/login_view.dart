@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as devtools show log;
 import 'package:myprivatenotes/constants/routes.dart';
-
+import 'package:myprivatenotes/utilities/show_error_dialog.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -58,30 +58,43 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
             onPressed: () async {
-              final email = _email.text;
+              final email = _email.text.trim();
               final password = _password.text;
               try {
                 final userCredential = await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
-                    email: email,
-                    password: password,
+                  email: email,
+                  password: password,
                 );
-               devtools.log(userCredential.toString());
-               Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
-              }on FirebaseAuthException catch (e){
-                if(e.code == 'user-not-found') {
-                  devtools.log('User not found');
+                devtools.log(userCredential.toString());
+                Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+              } on FirebaseAuthException catch (e) {
+                devtools.log('Firebase Error: ${e.code}');
+                switch (e.code) {
+                  case 'user-not-found':
+                    await showErrorDialog(context, 'User not found. Please register first.');
+                    break;
+                  case 'wrong-password':
+                    await showErrorDialog(context, 'Incorrect password. Please try again.');
+                    break;
+                  case 'invalid-email':
+                    await showErrorDialog(context, 'Invalid email format. Please enter a valid email.');
+                    break;
+                  case 'invalid-credential':
+                    await showErrorDialog(context, 'The email or password is incorrect.');
+                    break;
+                  default:
+                    await showErrorDialog(context, 'An unknown error occurred. Please try again.');
+                    break;
                 }
-                else if (e.code == 'wrong-password') {
-                  devtools.log('Wrong Password');
-                }
-                else  if (e.code == 'invalid-credential'){
-                  devtools.log('wrong email or password');
-                }
+              } catch (e) {
+                devtools.log('Unknown Error: $e');
+                await showErrorDialog(context, 'An unexpected error occurred. Please try again.');
               }
             },
             child: const Text('Login'),
           ),
+
           TextButton(onPressed: ()  { 
             Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
           },
@@ -90,6 +103,4 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
-
- 
 }
