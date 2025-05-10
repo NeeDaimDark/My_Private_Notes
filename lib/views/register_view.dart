@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myprivatenotes/constants/routes.dart';
 
 import 'dart:developer' as devtools show log;
+import 'package:myprivatenotes/utilities/show_error_dialog.dart';
 
 
 class RegisterView extends StatefulWidget {
@@ -13,6 +14,7 @@ class RegisterView extends StatefulWidget {
   @override
   State<RegisterView> createState() => _RegisterViewState();
 }
+
 
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
@@ -68,22 +70,42 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password =_password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
+                await FirebaseAuth.instance
                     .createUserWithEmailAndPassword(
                     email: email,
                     password: password
                 );
-                devtools.log(userCredential.toString());
+                final user = FirebaseAuth.instance.currentUser;
+                await user?.sendEmailVerification();
+                Navigator.of(context).pushNamed(emailVerifyRoute);
               } on FirebaseAuthException catch (e){
-                if(e.code == 'weak-password') {
-                  devtools.log('Weak password');
+                switch (e.code) {
+                  case 'weak-password':
+                    await showErrorDialog(
+                    context, 'The password is too weak. Please use a stronger password.');
+                    break;
+                  case 'email-already-in-use':
+                    await showErrorDialog(
+                    context, 'This email is already registered. Please login instead.');
+                    break;
+                  case 'invalid-email':
+                    await showErrorDialog(
+                    context, 'The email address is not valid. Please enter a valid email.');
+                    break;
+                  case 'operation-not-allowed':
+                    await showErrorDialog(
+                    context, 'Registration is disabled for this app.');
+                    break;
+                  default:
+                    await showErrorDialog(
+                    context, 'An unknown error occurred. Please try again.');
+                    break;
                 }
-                else if (e.code == 'email-already-in-use') {
-                  devtools.log('this email is already in use');
-                }
-                else  if (e.code == 'invalid-email'){
-                  devtools.log('Invalid email entrered');
-                }
+              } catch (e) {
+                devtools.log('Unknown Error: $e');
+                await showErrorDialog(
+                context, 'An unexpected error occurred. Please try again.');
+
 
               }
             },
