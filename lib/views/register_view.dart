@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myprivatenotes/constants/routes.dart';
-
+import 'package:myprivatenotes/services/auth/auth_service.dart';
+import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
 import 'dart:developer' as devtools show log;
 import 'package:myprivatenotes/utilities/show_error_dialog.dart';
 
@@ -70,44 +68,35 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password =_password.text;
               try {
-                await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                    email: email,
-                    password: password
-                );
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
+                await AuthService.firebase().createUser(email: email, password: password);
+                AuthService.firebase().sendEmailVerification();
                 Navigator.of(context).pushNamed(emailVerifyRoute);
-              } on FirebaseAuthException catch (e){
-                switch (e.code) {
-                  case 'weak-password':
-                    await showErrorDialog(
-                    context, 'The password is too weak. Please use a stronger password.');
-                    break;
-                  case 'email-already-in-use':
-                    await showErrorDialog(
-                    context, 'This email is already registered. Please login instead.');
-                    break;
-                  case 'invalid-email':
-                    await showErrorDialog(
-                    context, 'The email address is not valid. Please enter a valid email.');
-                    break;
-                  case 'operation-not-allowed':
-                    await showErrorDialog(
-                    context, 'Registration is disabled for this app.');
-                    break;
-                  default:
-                    await showErrorDialog(
-                    context, 'An unknown error occurred. Please try again.');
-                    break;
-                }
-              } catch (e) {
-                devtools.log('Unknown Error: $e');
+              }on WeakPasswordAuthException {
                 await showErrorDialog(
-                context, 'An unexpected error occurred. Please try again.');
+                    context,
+                    'The password is too weak. Please use a stronger password.',
+                );
 
+              }on EmailAlreadyInUseAuthException{
+                await showErrorDialog(
+                    context,
+                    'This email is already registered. Please login instead.',
+                );
+              }on InvalidEmailAuthException {
+                await showErrorDialog(
+                    context,
+                    'The email address is not valid. Please enter a valid email.',
+                );
 
+              }on GenericAuthException{
+                await showErrorDialog(
+                  context,
+                  'An unknown error occurred. Please try again.',
+                );
               }
+
+
+
             },
             child: const Text('Register'),
           ),
