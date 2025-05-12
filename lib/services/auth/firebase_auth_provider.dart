@@ -62,6 +62,7 @@ class FirebaseAuthProvider implements AuthProvider{
           email: email,
           password: password
       );
+      await _reloadUser();
       final user = currentUser;
       if (user != null) {
         return user;
@@ -117,9 +118,15 @@ class FirebaseAuthProvider implements AuthProvider{
 
   @override
   Future<void> initialize() async{
-    Firebase.initializeApp(
+    await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
-   
+
+  Future<void> _reloadUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.reload();
+    }
+  }
 }

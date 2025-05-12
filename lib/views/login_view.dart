@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 import 'package:myprivatenotes/constants/routes.dart';
+import 'package:myprivatenotes/services/auth/auth_user.dart';
 import 'package:myprivatenotes/utilities/show_error_dialog.dart';
 
 import 'package:myprivatenotes/services/auth/auth_service.dart';
@@ -68,6 +69,7 @@ class _LoginViewState extends State<LoginView> {
                 );
 
                 final user = AuthService.firebase().currentUser;
+
                 if (user?.isEmailVerified ?? false){
                   //user email verified
                   Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
