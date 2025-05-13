@@ -54,45 +54,45 @@ class FirebaseAuthProvider implements AuthProvider{
 
 
   @override
+  @override
   Future<AuthUser> logIn({
     required String email,
-    required String password}) async{
-    try{
+    required String password,
+  }) async {
+    try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password
+        email: email,
+        password: password,
       );
-      await _reloadUser();
+
+      await _reloadUser(); // Ensure user is reloaded to get the latest status
       final user = currentUser;
       if (user != null) {
         return user;
       } else {
         throw UserNotLoggedInAuthException();
       }
-
-    }
-    on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       devtools.log('Firebase Error: ${e.code}');
       switch (e.code) {
         case 'user-not-found':
           throw UserNotFoundAuthException();
-
         case 'wrong-password':
           throw WrongPasswordAuthException();
         case 'invalid-email':
           throw InvalidEmailAuthException();
-
         case 'invalid-credential':
           throw InvalidCredentialAuthException();
-
         default:
           throw GenericAuthException();
-
       }
     } catch (_) {
       throw GenericAuthException();
-     }
+    }
   }
+
+
+
 
 
   @override
@@ -122,11 +122,12 @@ class FirebaseAuthProvider implements AuthProvider{
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
-
   Future<void> _reloadUser() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await user.reload();
     }
   }
+
+
 }

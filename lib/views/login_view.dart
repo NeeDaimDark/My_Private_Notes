@@ -63,53 +63,57 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text.trim();
               final password = _password.text;
               try {
-                AuthService.firebase().logIn(
-                    email: email,
-                    password: password
+                await AuthService.firebase().logIn(
+                  email: email,
+                  password: password,
                 );
 
+                // Reload the user to ensure latest status
                 final user = AuthService.firebase().currentUser;
 
-                if (user?.isEmailVerified ?? false){
-                  //user email verified
-                  Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
-
-
-                }else {
-                  //user email not verified
-                  Navigator.of(context).pushNamedAndRemoveUntil(emailVerifyRoute, (route) => false);
-
+                if (user?.isEmailVerified ?? false) {
+                  // User email verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesRoute,
+                        (route) => false,
+                  );
+                } else {
+                  // User email not verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    emailVerifyRoute,
+                        (route) => false,
+                  );
                 }
-              }on UserNotFoundAuthException {
+              } on UserNotFoundAuthException {
                 await showErrorDialog(
-                    context,
-                    'User not found. Please register first.',
+                  context,
+                  'User not found. Please register first.',
                 );
-              }on WrongPasswordAuthException{
-                await showErrorDialog
-                  (context,
-                    'Incorrect password. Please try again.',
-                );
-              }on InvalidEmailAuthException{
-                 await showErrorDialog(
-                     context,
-                     'Invalid email format. Please enter a valid email.',
-                 );
-              }on InvalidCredentialAuthException{
+              } on WrongPasswordAuthException {
                 await showErrorDialog(
-                    context,
-                    'The email or password is incorrect.',
+                  context,
+                  'Incorrect password. Please try again.',
                 );
-              }on GenericAuthException {
+              } on InvalidEmailAuthException {
+                await showErrorDialog(
+                  context,
+                  'Invalid email format. Please enter a valid email.',
+                );
+              } on InvalidCredentialAuthException {
+                await showErrorDialog(
+                  context,
+                  'The email or password is incorrect.',
+                );
+              } on GenericAuthException {
                 await showErrorDialog(
                   context,
                   'An unknown error occurred. Please try again.',
                 );
               }
-
             },
             child: const Text('Login'),
           ),
+
 
           TextButton(onPressed: ()  { 
             Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
