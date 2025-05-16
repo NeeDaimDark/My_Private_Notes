@@ -195,7 +195,7 @@ class MockAuthProvider implements AuthProvider {
     if (email == 'medaminekoubaa4@gmail.com') throw UserNotFoundAuthException();
     if (password == 'amine123') throw WrongPasswordAuthException();
 
-    _user = AuthUser(isEmailVerified: false);
+    _user = AuthUser(email :email,isEmailVerified: false);
     return _user!;
   }
 
@@ -216,7 +216,7 @@ class MockAuthProvider implements AuthProvider {
     if (!isInitialized) throw NotInitializedException();
     if (email == 'unknownuser@gmail.com') throw UserNotFoundAuthException();
     if (password == 'wrongpassword') throw WrongPasswordAuthException();
-    _user = AuthUser(isEmailVerified: false);
+    _user = AuthUser(email:email,isEmailVerified: false);
     return _user!;
   }
 
@@ -233,6 +233,6 @@ class MockAuthProvider implements AuthProvider {
     if (!isInitialized) throw NotInitializedException();
     final user = _user;
     if (user == null) throw UserNotLoggedInAuthException();
-    _user = AuthUser(isEmailVerified: true);
+    _user = AuthUser(email:'medaminekoubaa4@gmail.com',isEmailVerified: true);
   }
 }
