@@ -1,9 +1,9 @@
 import 'dart:developer' as devtools show log;
 import 'package:flutter/material.dart';
 import 'package:myprivatenotes/services/crud/notes_service.dart';
-import '../constants/routes.dart';
+import '../../constants/routes.dart';
 import 'package:myprivatenotes/services/auth/auth_service.dart';
-import '../enums/menu_actiom.dart' show MenuAction;
+import '../../enums/menu_actiom.dart' show MenuAction;
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -35,6 +35,13 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('My notes'),
         backgroundColor: Colors.blue,
         actions: [
+          IconButton(
+            onPressed: (){
+              Navigator.of(context).pushNamed(newNoteRoute);
+
+            },
+            icon: const Icon(Icons.add),
+          ),
           PopupMenuButton<MenuAction>(onSelected: (value) async {
             switch(value){
               case MenuAction.logout:
@@ -49,7 +56,7 @@ class _NotesViewState extends State<NotesView> {
 
 
             }
-          },itemBuilder: (context){
+          }, itemBuilder: (context){
             return const  [
               PopupMenuItem<MenuAction>(
                 value: MenuAction.logout,
