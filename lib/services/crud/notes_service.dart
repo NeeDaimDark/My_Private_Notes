@@ -15,11 +15,16 @@ class NotesService {
 
   List<DatabaseNote> _notes = [];
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance(){
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-           StreamController<List<DatabaseNote>>.broadcast();
+ late final  StreamController<List<DatabaseNote>> _notesStreamController ;
 
 
   Database _getDatabaseOrThrow(){
@@ -42,7 +47,7 @@ class NotesService {
       final db = await openDatabase(dbPath);
       _db = db;
       //create User table
-      await db.execute(createUserTble);
+      await db.execute(createUserTable);
       //create note table
       await db.execute(createNoteTable);
       print('Database opened at $dbPath');
@@ -297,8 +302,8 @@ const idColumn = 'id';
 const emailColumn = 'email';
 const userIdColumn = 'user_id';
 const textColumn ='text';
-const isSyncedWithCloudColumn = 'isSyncedWithCloud';
-const createUserTble =
+const isSyncedWithCloudColumn = 'is_synced_with_cloud';
+const createUserTable =
 ''' CREATE TABLE IF NOT EXISTS "user" (
          	"id"	INTEGER NOT NULL,
 	        "email"	TEXT NOT NULL UNIQUE,

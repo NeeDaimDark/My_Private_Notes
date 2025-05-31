@@ -19,14 +19,10 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _notesService = NotesService();
-    _notesService.open();
+    //_notesService.open();
     super.initState();
   }
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +73,35 @@ class _NotesViewState extends State<NotesView> {
                       switch (snapshot.connectionState){
                         case ConnectionState.waiting:
                         case ConnectionState.active:
-                          return const Text('waiting for all notes');
+                          if (snapshot.hasData) {
+                            final allNotes = snapshot.data as List<DatabaseNote>;
+                            if (allNotes.isEmpty) {
+                              return const Text('No notes yet');
+                            } else {
+                              return ListView.builder(
+                                itemCount: allNotes.length,
+                                itemBuilder: (context, index) {
+                                  final note = allNotes[index];
+                                  return ListTile(
+                                    title: Text(
+                                        note.text,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        softWrap: true,
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () async {
+                                        await _notesService.deleteNote(id: note.id);
+                                      },
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
                         default :
                           return const CircularProgressIndicator();
                       }
