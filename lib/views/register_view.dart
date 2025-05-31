@@ -3,7 +3,8 @@ import 'package:myprivatenotes/constants/routes.dart';
 import 'package:myprivatenotes/services/auth/auth_service.dart';
 import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
 import 'dart:developer' as devtools show log;
-import 'package:myprivatenotes/utilities/show_error_dialog.dart';
+
+import '../utilities/dialogs/error_dialog.dart';
 
 
 class RegisterView extends StatefulWidget {
