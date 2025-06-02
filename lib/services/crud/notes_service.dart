@@ -24,8 +24,6 @@ class NotesService {
   factory NotesService() => _shared;
 
  late final  StreamController<List<DatabaseNote>> _notesStreamController ;
-
-
   Database _getDatabaseOrThrow(){
     final db = _db;
     if(db ==null){
@@ -314,6 +312,7 @@ class DatabaseNote{
   int get hashCode => id.hashCode;
 
 }
+
 const dbName = 'notes.db';
 const noteTable = 'note';
 const userTable = 'user';
