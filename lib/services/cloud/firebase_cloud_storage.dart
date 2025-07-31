@@ -5,73 +5,77 @@ import 'package:myprivatenotes/services/cloud/cloud_storage_exceptions.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
-  Future<void> createNewNote({
-    required String ownerUserId,
-  }) async
-  {
-    await notes.add({
-       ownerUserIdFieldName : ownerUserId,
-       textFieldName: '',
 
+  // Créer une nouvelle note
+  Future<CloudNote> createNewNote({
+    required String ownerUserId,
+  }) async {
+    final document = await notes.add({
+      ownerUserIdFieldName: ownerUserId,
+      textFieldName: '',
     });
+    final fetchedNote = await document.get();
+    return CloudNote(
+      documentId: fetchedNote.id,
+      ownerUserId: ownerUserId,
+      text: '',
+    );
   }
+
+  // Obtenir toutes les notes d’un utilisateur
   Future<Iterable<CloudNote>> getNotes({
     required String ownerUserId,
-  }) async
-  {
+  }) async {
     try {
       return await notes
           .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
           .get()
           .then(
-          (value) => value.docs.map(
-            (doc) {
-              return CloudNote(
-                documentId: doc.id,
-                ownerUserId: doc.data()[ownerUserIdFieldName] as String,
-                text: doc.data()[textFieldName] as String,
-
-              );
-            }
-          ),
+            (value) => value.docs.map(
+              (doc) => CloudNote.fromSnapshot(doc),
+        ),
       );
-
-    }catch (e) {
+    } catch (e) {
       throw CouldNotGetAllNotesException();
     }
   }
 
-  Stream<Iterable<CloudNote>> allNotes({required String ownerUserId})  =>
-  notes.snapshots()
-      .map((event) => event.docs.map((doc) => CloudNote.fromSnapshot(doc))
-      .where((note) => note.ownerUserId == ownerUserId)
-  );
+  // Flux en temps réel des notes de l’utilisateur
+  Stream<Iterable<CloudNote>> allNotes({required String ownerUserId}) =>
+      notes.snapshots().map(
+            (event) => event.docs
+            .map((doc) => CloudNote.fromSnapshot(doc))
+            .where((note) => note.ownerUserId == ownerUserId),
+      );
+
+  // Mise à jour d’une note
   Future<void> updateNote({
     required String documentId,
-    required String textFieldName,
-  }) async
-  {
+    required String text,
+  }) async {
     try {
-     await notes.doc(documentId).update({
-       textFieldName: textFieldName,
-     });
+      await notes.doc(documentId).update({
+        textFieldName: text,
+      });
     } catch (e) {
       throw CouldNotUpdateNoteException();
     }
   }
 
-  Future<void> deleteNote({required String documentId,}) async
-  {
+  // Supprimer une note
+  Future<void> deleteNote({
+    required String documentId,
+  }) async {
     try {
       await notes.doc(documentId).delete();
     } catch (e) {
       throw CouldNotDeleteNoteException();
     }
   }
+
+  // Singleton
   static final FirebaseCloudStorage _shared =
-      FirebaseCloudStorage._sharedInstance();
+  FirebaseCloudStorage._sharedInstance();
   FirebaseCloudStorage._sharedInstance();
   factory FirebaseCloudStorage() => _shared;
-
-
 }

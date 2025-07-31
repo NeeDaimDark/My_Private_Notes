@@ -1,11 +1,14 @@
 import 'dart:developer' as devtools show log;
 import 'package:flutter/material.dart';
-import 'package:myprivatenotes/services/crud/notes_service.dart';
 import 'package:myprivatenotes/views/notes/notes_list_view.dart';
 import '../../constants/routes.dart';
 import 'package:myprivatenotes/services/auth/auth_service.dart';
 import '../../enums/menu_actiom.dart' show MenuAction;
 import '../../utilities/dialogs/logout_dialog.dart';
+import 'package:myprivatenotes/services/cloud/cloud_note.dart';
+import 'package:myprivatenotes/services/cloud/cloud_storage_exceptions.dart';
+import 'package:myprivatenotes/services/cloud/firebase_cloud_storage.dart';
+
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -15,12 +18,12 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  String get userEmail => AuthService.firebase().currentUser!.email!;
-  late final NotesService _notesService;
+  String get userId => AuthService.firebase().currentUser!.id;
+  late final FirebaseCloudStorage _notesService;
 
   @override
   void initState() {
-    _notesService = NotesService();
+    _notesService = FirebaseCloudStorage();
     //_notesService.open();
     super.initState();
   }
@@ -64,51 +67,42 @@ class _NotesViewState extends State<NotesView> {
           },)
         ],
       ),
-      body: FutureBuilder(
-          future: _notesService.getOrCreateUser(email: userEmail),
-          builder: (context,snapshot) {
-            switch (snapshot.connectionState ){
-              case ConnectionState.done:
-                return StreamBuilder(
-                    stream: _notesService.allNotes,
-                    builder: (context, snapshot){
-                      switch (snapshot.connectionState){
-                        case ConnectionState.waiting:
-                        case ConnectionState.active:
-                          if (snapshot.hasData) {
-                            final allNotes = snapshot.data as List<DatabaseNote>;
-                            if (allNotes.isEmpty) {
-                              return const Center(
-                                child: Text('No notes yet'),
-                              );
-                            } else {
-                              return NotesListView(notes : allNotes, onDeleteNote: (note) async {
-                              await _notesService.deleteNote(id: note.id);
-                            },
-                            onTap: (note) {
-                              Navigator.of(context).pushNamed(
-                                CreateOrUpdateNoteRoute,
-                                arguments: note,
-                              );
-                            },
-                            );
-                            }
-
-                            }
-                           else {
-                            return const CircularProgressIndicator();
-                          }
-                        default :
-                          return const CircularProgressIndicator();
-                      }
+      body: StreamBuilder(
+        stream: _notesService.allNotes(ownerUserId: userId),
+        builder: (context, snapshot){
+          switch (snapshot.connectionState){
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (snapshot.hasData) {
+                final allNotes = snapshot.data as Iterable<CloudNote>;
+                if (allNotes.isEmpty) {
+                  return const Center(
+                    child: Text('No notes yet'),
+                  );
+                } else {
+                  return NotesListView(notes : allNotes, onDeleteNote: (note) async {
+                    await _notesService.deleteNote(
+                      documentId: note.documentId,
+                    );
+                  },
+                    onTap: (note) {
+                      Navigator.of(context).pushNamed(
+                        CreateOrUpdateNoteRoute,
+                        arguments: note,
+                      );
                     },
-                );
-              default:
-                return CircularProgressIndicator();
+                  );
+                }
 
-            }
-          },
-      ),
+              }
+              else {
+                return const CircularProgressIndicator();
+              }
+            default :
+              return const CircularProgressIndicator();
+          }
+        },
+      )
     );
   }
 }

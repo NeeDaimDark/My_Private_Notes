@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -335,4 +336,4 @@ const createNoteTable =
 	        "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
 	        PRIMARY KEY("id" AUTOINCREMENT),
         	FOREIGN KEY("user_id") REFERENCES "user"("id")
-          ); ''';
+          ); ''';*/
