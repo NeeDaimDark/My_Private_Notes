@@ -32,10 +32,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const HomePage(),
         routes: {
-          loginRoute: (context) => const LoginView(),
-          registerRoute: (context) => const RegisterView(),
-          emailVerifyRoute: (context) => const VerifyEmailView(),
-          notesRoute: (context) => const NotesView(),
+
           CreateOrUpdateNoteRoute: (context) => const CreateUpdateNoteView(),
         },
       ),
@@ -59,7 +56,10 @@ class HomePage extends StatelessWidget {
           return const LoginView();
         } else if (state is AuthStateNeedsVerification) {
           return const VerifyEmailView();
-        } else {
+        }else if (state is AuthStateRegistering){
+          return const RegisterView();
+        }
+        else {
           // Default loading screen
           return const Scaffold(
             body: Center(

@@ -1,10 +1,7 @@
-
 import 'package:flutter/material.dart';
-import 'package:myprivatenotes/constants/routes.dart';
-import 'package:myprivatenotes/services/auth/auth_service.dart';
-
-
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myprivatenotes/services/auth/bloc/auth_bloc.dart';
+import 'package:myprivatenotes/services/auth/bloc/auth_events.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -16,36 +13,48 @@ class VerifyEmailView extends StatefulWidget {
 class _VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: const Text('Verify email'),
+        title: const Text('Verify Email'),
         backgroundColor: Colors.blue,
-
       ),
-      body: Column(
-        children: [
-          Text("we've sent you an email of verification, please check your inbox and verify your account"),
-          Text("If you haven't recieved an email of verification click the button below"),
-          TextButton(
-              onPressed: () async {
-               await AuthService.firebase().sendEmailVerification();
-          }, child: const Text('Send email Verification')
-          ),
-          TextButton(
-              onPressed: () async {
-                await AuthService.firebase().logOut();
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    registerRoute,
-                        (route)=>false);
-
-          },
-              child: const Text('Restart')
-          )
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "We've sent you an email verification link. Please check your inbox and verify your account.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "If you haven't received the verification email yet, click the button below.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(
+                  const AuthEventSendEmailVerification(),
+                );
+              },
+              child: const Text('Resend Verification Email'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(
+                  const AuthEventLogOut(),
+                );
+              },
+              child: const Text('Restart (Go back to Login)'),
+            ),
+          ],
+        ),
       ),
     );
-
-
-
   }
 }
