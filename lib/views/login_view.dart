@@ -10,6 +10,7 @@ import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
 import 'package:myprivatenotes/services/auth/bloc/auth_bloc.dart';
 import 'package:myprivatenotes/services/auth/bloc/auth_events.dart';
 
+import '../services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -62,42 +63,48 @@ class _LoginViewState extends State<LoginView> {
                 hintText: 'Please Enter Your Password Here'
             ),
           ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text.trim();
-              final password = _password.text;
-              try {
-               context.read<AuthBloc>().add (
-                 AuthEventLogIn(email, password),
-               );
-              } on UserNotFoundAuthException {
-                await showErrorDialog(
-                  context,
-                  'User not found. Please register first.',
-                );
-              } on WrongPasswordAuthException {
-                await showErrorDialog(
-                  context,
-                  'Incorrect password. Please try again.',
-                );
-              } on InvalidEmailAuthException {
-                await showErrorDialog(
-                  context,
-                  'Invalid email format. Please enter a valid email.',
-                );
-              } on InvalidCredentialAuthException {
-                await showErrorDialog(
-                  context,
-                  'The email or password is incorrect.',
-                );
-              } on GenericAuthException {
-                await showErrorDialog(
-                  context,
-                  'An unknown error occurred. Please try again.',
-                );
+          BlocListener<AuthBloc,AuthState>(
+            listener : (context,state){
+              if(state is AuthStateLoggedOut){
+                if (state.exception is UserNotFoundAuthException) {
+                  showErrorDialog(
+                    context,
+                    'User not found. Please register first.',
+                  );
+                } else if (state.exception is WrongPasswordAuthException) {
+                  showErrorDialog(
+                    context,
+                    'Wrong Credentials! Please try again.',
+                  );
+                } else if (state.exception is InvalidEmailAuthException) {
+                  showErrorDialog(
+                    context,
+                    'Invalid email format. Please enter a valid email.',
+                  );
+                } else if (state.exception is InvalidCredentialAuthException) {
+                  showErrorDialog(
+                    context,
+                    'The email or password is incorrect.',
+                  );
+                } else if (state.exception is GenericAuthException) {
+                  showErrorDialog(
+                    context,
+                    'An unknown error occurred. Please try again.',
+                  );
+                }
               }
             },
-            child: const Text('Login'),
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text.trim();
+                final password = _password.text;
+                context.read<AuthBloc>().add(
+                  AuthEventLogIn(email, password),
+                );
+
+              },
+              child: const Text('Login'),
+            ),
           ),
 
 
