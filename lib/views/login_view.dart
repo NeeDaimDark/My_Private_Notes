@@ -49,7 +49,7 @@ class _LoginViewState extends State<LoginView> {
 
             showErrorDialog(
               context,
-              'User not found. Please register first.',
+              'Cannot find user with the entered credentials.',
             );
           } else if (state.exception is WrongPasswordAuthException) {
             showErrorDialog(
@@ -80,46 +80,62 @@ class _LoginViewState extends State<LoginView> {
           backgroundColor: Colors.blue,
 
         ),
-        body: Column(
-          children: [
-            TextField(
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: InputDecoration(
-                  hintText: 'Please Enter Your Email Here'
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                'Please Login to Your Account',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: InputDecoration(
-                  hintText: 'Please Enter Your Password Here'
+              TextField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: InputDecoration(
+                    hintText: 'Please Enter Your Email Here'
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = _email.text.trim();
-                final password = _password.text;
+              TextField(
+                controller: _password,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: InputDecoration(
+                    hintText: 'Please Enter Your Password Here'
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final email = _email.text.trim();
+                  final password = _password.text;
+                  context.read<AuthBloc>().add(
+                    AuthEventLogIn(email, password),
+                  );
+
+                },
+                child: const Text('Login'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    const AuthEventForgotPassword(),
+                  );
+                },
+                child: const Text('Forgot Password ?'),
+              ),
+              TextButton(onPressed: ()  {
                 context.read<AuthBloc>().add(
-                  AuthEventLogIn(email, password),
-                );
-
+                  const AuthEventShouldRegister(),
+               );
               },
-              child: const Text('Login'),
-            ),
-
-
-            TextButton(onPressed: ()  {
-              context.read<AuthBloc>().add(
-                const AuthEventShouldRegister(),
-             );
-            },
-                child: const Text('Not Register yet ? Register Here!'))
-          ],
+                  child: const Text('Not Register yet ? Register Here!'))
+            ],
+          ),
         ),
       ),
     );

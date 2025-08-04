@@ -235,4 +235,12 @@ class MockAuthProvider implements AuthProvider {
     if (user == null) throw UserNotLoggedInAuthException();
     _user = AuthUser(id: 'my id',email:'medaminekoubaa4@gmail.com',isEmailVerified: true);
   }
+
+  @override
+  Future<void> sendPasswordReset({required String toEmail}) {
+    if (!isInitialized) throw NotInitializedException();
+    if (toEmail == 'invalid-email-format') throw InvalidEmailAuthException();
+    // Simulate sending password reset email
+    return Future.delayed(const Duration(seconds: 1));
+  }
 }

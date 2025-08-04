@@ -1,107 +1,87 @@
-
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import 'loading_screen_controller.dart';
 
 class LoadingScreen {
   static final LoadingScreen _shared = LoadingScreen._sharedInstance();
   LoadingScreen._sharedInstance();
   factory LoadingScreen() => _shared;
-  static LoadingScreenController? controller;
 
-  void hide() {
-      controller?.close();
-      controller = null;
-  }
-  void show ({
+  LoadingScreenController? _controller;
+
+  void show({
     required BuildContext context,
     required String text,
   }) {
-    if (controller?.update(text) ?? false) {
+    // Si déjà affiché, on met à jour le texte uniquement
+    if (_controller?.update(text) ?? false) {
       return;
-    }else{
-      controller = showOverlay(
-        context: context,
-        text: text,
-      );
+    } else {
+      _controller = _showOverlay(context: context, text: text);
     }
   }
 
-
-
-  LoadingScreenController showOverlay({
-    required BuildContext context,
-    required String text,
-})
-  {
-    final _text = StreamController<String> ();
-    _text.add(text);
-    final state =Overlay.of(context);
-    final renderBox = state?.context.findRenderObject() as RenderBox?;
-    final size = renderBox?.size ;
-    final overlay = OverlayEntry(
-        builder: (context){
-          return Material(
-            color : Colors.black.withAlpha(150),
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: size!.width * 0.8,
-                maxHeight: size.height * 0.8,
-                minWidth: size.width * 0.5,
-
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 20),
-                    StreamBuilder(
-                      stream: _text.stream,
-                      builder: (context,snapshot){
-                        if(snapshot.hasData) {
-                          return Text(
-                              snapshot.data as String,
-                               textAlign: TextAlign.center,
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            )
-          );
-
-        },
-    );
-    state?.insert(overlay);
-    return LoadingScreenController(
-        close: (){
-          _text.close();
-          overlay.remove();
-          return true;
-        },
-        update: (String text) {
-          _text.add(text);
-          return true;
-        },
-    );
-
-
-
+  void hide() {
+    _controller?.close();
+    _controller = null;
   }
 
+  LoadingScreenController _showOverlay({
+    required BuildContext context,
+    required String text,
+  }) {
+    final textStream = StreamController<String>();
+    textStream.add(text);
+
+    final overlayState = Overlay.of(context, rootOverlay: true);
+    final overlay = OverlayEntry(
+      builder: (context) => Material(
+        color: Colors.black.withOpacity(0.5),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IntrinsicWidth(
+              stepWidth: 200,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 20),
+                  StreamBuilder<String>(
+                    stream: textStream.stream,
+                    builder: (context, snapshot) {
+                      return Text(
+                        snapshot.data ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlayState?.insert(overlay);
+
+    return LoadingScreenController(
+      close: () {
+        textStream.close();
+        overlay.remove();
+        return true;
+      },
+      update: (newText) {
+        textStream.add(newText);
+        return true;
+      },
+    );
+  }
 }
