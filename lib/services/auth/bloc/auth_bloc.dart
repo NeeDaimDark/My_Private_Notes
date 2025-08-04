@@ -4,7 +4,7 @@ import '../auth_provider.dart';
 import 'auth_events.dart';
 
 class AuthBloc extends Bloc <AuthEvent,AuthState>{
-  AuthBloc(AuthProvider provider) : super (const AuthStateUninitialized()) {
+  AuthBloc(AuthProvider provider) : super (const AuthStateUninitialized(isLoading: true)) {
     //SEND EMAIL VERIFICATION
     on<AuthEventSendEmailVerification>((event, emit) async {
       await provider.sendEmailVerification();
@@ -12,7 +12,10 @@ class AuthBloc extends Bloc <AuthEvent,AuthState>{
 
     });
     on<AuthEventShouldRegister>((event, emit) {
-      emit(const AuthStateRegistering(null));
+      emit(const AuthStateRegistering(
+        exception: null,
+        isLoading: false,
+      ));
     });
     //register
     on<AuthEventRegister>((event, emit) async {
@@ -24,10 +27,13 @@ class AuthBloc extends Bloc <AuthEvent,AuthState>{
           password: password,
         );
         await provider.sendEmailVerification();
-        emit(const AuthStateNeedsVerification());
+        emit(const AuthStateNeedsVerification(isLoading: false));
         
       } on Exception catch (e) {
-        emit(AuthStateRegistering(e));
+        emit(AuthStateRegistering(
+          exception: e,
+          isLoading: false,
+        ));
       }
     });
     //initialize
@@ -35,16 +41,26 @@ class AuthBloc extends Bloc <AuthEvent,AuthState>{
       await provider.initialize();
       final user = provider.currentUser;
       if (user == null) {
-        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        emit(const AuthStateLoggedOut(
+            exception: null,
+            isLoading: false,
+        ));
       } else if (!user.isEmailVerified) {
-        emit(const AuthStateNeedsVerification());
+        emit(const AuthStateNeedsVerification(isLoading: false));
       } else {
-        emit(AuthStateLoggedIn(user));
+        emit(AuthStateLoggedIn(
+            user:user,
+            isLoading: false,
+        ));
       }
     });
     //log in
     on<AuthEventLogIn>((event, emit) async {
-      emit(const AuthStateLoggedOut(exception: null, isLoading: true));
+      emit(const AuthStateLoggedOut(
+          exception: null,
+          isLoading: true,
+          loadingText: 'Please wait while we log you in...',
+      ));
       final email = event.email;
       final password = event.password;
       try {
@@ -52,16 +68,33 @@ class AuthBloc extends Bloc <AuthEvent,AuthState>{
           email: email,
           password: password,
         );
-        emit(AuthStateLoggedIn(user));
+        emit(AuthStateLoggedIn(
+            user:user,
+            isLoading: false,
+        ));
         if (!user.isEmailVerified) {
-          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
-          emit(const AuthStateNeedsVerification());
+          emit(const AuthStateLoggedOut(
+              exception: null,
+              isLoading: false
+          ));
+          emit(const AuthStateNeedsVerification(
+            isLoading: false,
+          ));
         }else {
-          emit (const AuthStateLoggedOut(exception: null, isLoading: false));
-          emit(AuthStateLoggedIn(user));
+          emit (const AuthStateLoggedOut(
+              exception: null,
+              isLoading: false,
+          ));
+          emit(AuthStateLoggedIn(
+              user:user,
+              isLoading: false
+          ));
         }
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e, isLoading: false));
+        emit(AuthStateLoggedOut(
+            exception: e,
+            isLoading: false,
+        ));
       }
     });
 
@@ -72,9 +105,15 @@ class AuthBloc extends Bloc <AuthEvent,AuthState>{
       try {
 
         await provider.logOut();
-        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        emit(const AuthStateLoggedOut(
+            exception: null,
+            isLoading: false,
+        ));
       }on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e, isLoading: false));
+        emit(AuthStateLoggedOut(
+            exception: e,
+            isLoading: false,
+        ));
       }
     });
   }

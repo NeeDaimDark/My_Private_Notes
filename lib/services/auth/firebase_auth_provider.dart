@@ -17,7 +17,7 @@ class FirebaseAuthProvider implements AuthProvider{
   }) async
   {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
