@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myprivatenotes/services/cloud/cloud_note.dart';
-import 'package:myprivatenotes/services/cloud/cloud_storage_constants.dart';
-import 'package:myprivatenotes/services/cloud/cloud_storage_exceptions.dart';
+import 'package:Nuvio/services/cloud/cloud_note.dart';
+import 'package:Nuvio/services/cloud/cloud_storage_constants.dart';
+import 'package:Nuvio/services/cloud/cloud_storage_exceptions.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');

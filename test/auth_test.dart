@@ -1,6 +1,6 @@
-import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
-import 'package:myprivatenotes/services/auth/auth_provider.dart';
-import 'package:myprivatenotes/services/auth/auth_user.dart';
+import 'package:Nuvio/services/auth/auth_exceptions.dart';
+import 'package:Nuvio/services/auth/auth_provider.dart';
+import 'package:Nuvio/services/auth/auth_user.dart';
 import 'package:test/test.dart';
 
 void main() {

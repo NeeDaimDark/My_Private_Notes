@@ -1,6 +1,6 @@
-import 'package:myprivatenotes/services/auth/auth_provider.dart';
-import 'package:myprivatenotes/services/auth/auth_user.dart';
-import 'package:myprivatenotes/services/auth/firebase_auth_provider.dart';
+import 'package:Nuvio/services/auth/auth_provider.dart';
+import 'package:Nuvio/services/auth/auth_user.dart';
+import 'package:Nuvio/services/auth/firebase_auth_provider.dart';
 
 class AuthService implements AuthProvider{
   final AuthProvider provider;

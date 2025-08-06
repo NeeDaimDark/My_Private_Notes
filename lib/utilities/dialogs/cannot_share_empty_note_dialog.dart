@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myprivatenotes/utilities/dialogs/generic_dialogs.dart';
+import 'package:Nuvio/utilities/dialogs/generic_dialogs.dart';
 
 
 Future<void> showCannotShareEmptyNoteDialog(BuildContext context) async {

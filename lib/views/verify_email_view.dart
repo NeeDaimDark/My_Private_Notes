@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_bloc.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_events.dart';
+import 'package:Nuvio/services/auth/bloc/auth_bloc.dart';
+import 'package:Nuvio/services/auth/bloc/auth_events.dart';
 
 class VerifyEmailView extends StatelessWidget {
   const VerifyEmailView({super.key});

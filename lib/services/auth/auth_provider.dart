@@ -1,4 +1,4 @@
-import 'package:myprivatenotes/services/auth/auth_user.dart';
+import 'package:Nuvio/services/auth/auth_user.dart';
 
 abstract class AuthProvider {
   Future<void> initialize();

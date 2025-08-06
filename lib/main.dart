@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myprivatenotes/helpers/loading/loading_screen.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_bloc.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_events.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_state.dart';
-import 'package:myprivatenotes/services/auth/firebase_auth_provider.dart';
-import 'package:myprivatenotes/views/forgot_password_view.dart';
-import 'package:myprivatenotes/views/notes/notes_view.dart';
-import 'package:myprivatenotes/views/notes/create_update_note_view.dart';
-import 'package:myprivatenotes/views/login_view.dart';
-import 'package:myprivatenotes/views/register_view.dart';
-import 'package:myprivatenotes/views/verify_email_view.dart';
-import 'package:myprivatenotes/constants/routes.dart';
+import 'package:Nuvio/helpers/loading/loading_screen.dart';
+import 'package:Nuvio/services/auth/bloc/auth_bloc.dart';
+import 'package:Nuvio/services/auth/bloc/auth_events.dart';
+import 'package:Nuvio/services/auth/bloc/auth_state.dart';
+import 'package:Nuvio/services/auth/firebase_auth_provider.dart';
+import 'package:Nuvio/views/forgot_password_view.dart';
+import 'package:Nuvio/views/notes/notes_view.dart';
+import 'package:Nuvio/views/notes/create_update_note_view.dart';
+import 'package:Nuvio/views/login_view.dart';
+import 'package:Nuvio/views/register_view.dart';
+import 'package:Nuvio/views/verify_email_view.dart';
+import 'package:Nuvio/constants/routes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

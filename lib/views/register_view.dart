@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_bloc.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_events.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_state.dart';
-import 'package:myprivatenotes/utilities/dialogs/error_dialog.dart';
+import 'package:Nuvio/services/auth/auth_exceptions.dart';
+import 'package:Nuvio/services/auth/bloc/auth_bloc.dart';
+import 'package:Nuvio/services/auth/bloc/auth_events.dart';
+import 'package:Nuvio/services/auth/bloc/auth_state.dart';
+import 'package:Nuvio/utilities/dialogs/error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -16,6 +16,7 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -86,9 +87,19 @@ class _RegisterViewState extends State<RegisterView> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _password,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     hintText: 'Mot de passe',
                     filled: true,
                     fillColor: Colors.white,

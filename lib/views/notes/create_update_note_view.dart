@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myprivatenotes/services/auth/auth_service.dart';
-import 'package:myprivatenotes/utilities/generics/get_arguments.dart';
-import 'package:myprivatenotes/services/cloud/cloud_note.dart';
-import 'package:myprivatenotes/services/cloud/firebase_cloud_storage.dart';
+import 'package:Nuvio/services/auth/auth_service.dart';
+import 'package:Nuvio/utilities/generics/get_arguments.dart';
+import 'package:Nuvio/services/cloud/cloud_note.dart';
+import 'package:Nuvio/services/cloud/firebase_cloud_storage.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../utilities/dialogs/cannot_share_empty_note_dialog.dart';

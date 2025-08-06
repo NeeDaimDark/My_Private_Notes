@@ -1,10 +1,10 @@
 import 'dart:developer' as devtools show log;
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:myprivatenotes/firebase_options.dart';
-import 'package:myprivatenotes/services/auth/auth_user.dart';
-import 'package:myprivatenotes/services/auth/auth_exceptions.dart';
-import 'package:myprivatenotes/services/auth/auth_provider.dart';
+import 'package:Nuvio/firebase_options.dart';
+import 'package:Nuvio/services/auth/auth_user.dart';
+import 'package:Nuvio/services/auth/auth_exceptions.dart';
+import 'package:Nuvio/services/auth/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth,FirebaseAuthException;
 
 

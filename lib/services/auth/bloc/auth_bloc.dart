@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:myprivatenotes/services/auth/bloc/auth_state.dart';
+import 'package:Nuvio/services/auth/bloc/auth_state.dart';
 import '../auth_provider.dart';
 import 'auth_events.dart';
 

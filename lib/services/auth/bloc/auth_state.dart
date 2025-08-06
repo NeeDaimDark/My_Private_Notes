@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:myprivatenotes/services/auth/auth_user.dart';
+import 'package:Nuvio/services/auth/auth_user.dart';
 
 
 @immutable
