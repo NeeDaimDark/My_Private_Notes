@@ -12,6 +12,8 @@ import 'package:Nuvio/views/login_view.dart';
 import 'package:Nuvio/views/register_view.dart';
 import 'package:Nuvio/views/verify_email_view.dart';
 import 'package:Nuvio/constants/routes.dart';
+import '../L10n/app_localizations.dart'; // si le fichier est dans views/
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
     return BlocProvider<AuthBloc>(
       create: (context) => AuthBloc(FirebaseAuthProvider()),
       child: MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         title: 'Private Notes',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

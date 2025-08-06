@@ -4,8 +4,8 @@ import 'package:Nuvio/utilities/generics/get_arguments.dart';
 import 'package:Nuvio/services/cloud/cloud_note.dart';
 import 'package:Nuvio/services/cloud/firebase_cloud_storage.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../../utilities/dialogs/cannot_share_empty_note_dialog.dart';
+import 'package:Nuvio/utilities/dialogs/cannot_share_empty_note_dialog.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {
   const CreateUpdateNoteView({super.key});
@@ -89,13 +89,15 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
         backgroundColor: const Color(0xFF6C63FF),
-        title: const Text(
-          'Nouvelle note',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          loc.create_note_title,
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
@@ -105,7 +107,10 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
               if (_note == null || _textController.text.isEmpty) {
                 showCannotShareEmptyNoteDialog(context);
               } else {
-                Share.share(_textController.text, subject: 'Check out this note!');
+                Share.share(
+                  _textController.text,
+                  subject: loc.note_share_subject,
+                );
               }
             },
           ),
@@ -126,7 +131,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                     maxLines: null,
                     style: const TextStyle(fontSize: 18),
                     decoration: InputDecoration(
-                      hintText: 'Écrivez votre note ici...',
+                      hintText: loc.create_note_hint,
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding: const EdgeInsets.all(16),
@@ -140,7 +145,8 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
+                        borderSide: const BorderSide(
+                            color: Color(0xFF6C63FF), width: 2),
                       ),
                     ),
                   ),

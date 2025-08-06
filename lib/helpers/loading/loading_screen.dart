@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 import 'loading_screen_controller.dart';
 
 class LoadingScreen {
@@ -11,13 +12,15 @@ class LoadingScreen {
 
   void show({
     required BuildContext context,
-    required String text,
+    String? text,
   }) {
-    // Si déjà affiché, on met à jour le texte uniquement
-    if (_controller?.update(text) ?? false) {
+    final loc = AppLocalizations.of(context)!;
+    final loadingText = text ?? loc.loading;
+
+    if (_controller?.update(loadingText) ?? false) {
       return;
     } else {
-      _controller = _showOverlay(context: context, text: text);
+      _controller = _showOverlay(context: context, text: loadingText);
     }
   }
 

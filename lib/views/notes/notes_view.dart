@@ -10,6 +10,7 @@ import '../../services/auth/bloc/auth_events.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
 import 'package:Nuvio/services/cloud/cloud_note.dart';
 import 'package:Nuvio/services/cloud/firebase_cloud_storage.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -30,10 +31,12 @@ class _NotesViewState extends State<NotesView> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('Mes Notes'),
+        title: Text(loc.notes_appbar_title),
         centerTitle: true,
         backgroundColor: const Color(0xFF6C63FF),
         actions: [
@@ -54,10 +57,10 @@ class _NotesViewState extends State<NotesView> {
               }
             },
             itemBuilder: (context) {
-              return const [
+              return [
                 PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
-                  child: Text('Déconnexion'),
+                  child: Text(loc.notes_popup_logout),
                 ),
               ];
             },
@@ -73,10 +76,10 @@ class _NotesViewState extends State<NotesView> {
               if (snapshot.hasData) {
                 final allNotes = snapshot.data as Iterable<CloudNote>;
                 if (allNotes.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'Aucune note enregistrée pour le moment.',
-                      style: TextStyle(fontSize: 16),
+                      loc.notes_empty_message,
+                      style: const TextStyle(fontSize: 16),
                     ),
                   );
                 } else {

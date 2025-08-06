@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:Nuvio/constants/routes.dart';
 import 'package:Nuvio/services/auth/bloc/auth_bloc.dart';
 import 'package:Nuvio/services/auth/bloc/auth_events.dart';
 import 'package:Nuvio/services/auth/bloc/auth_state.dart';
 import 'package:Nuvio/services/auth/auth_exceptions.dart';
 import 'package:Nuvio/utilities/dialogs/error_dialog.dart';
+import '../L10n/app_localizations.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -35,20 +37,20 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateLoggedOut) {
-          if (state.exception is UserNotFoundAuthException) {
-            await showErrorDialog(context, 'Utilisateur introuvable.');
-          } else if (state.exception is WrongPasswordAuthException) {
-            await showErrorDialog(context, 'Mot de passe incorrect.');
-          } else if (state.exception is InvalidEmailAuthException) {
-            await showErrorDialog(context, 'Format email invalide.');
-          } else if (state.exception is InvalidCredentialAuthException) {
-            await showErrorDialog(context, 'Identifiants incorrects.');
-          } else if (state.exception is GenericAuthException) {
-            await showErrorDialog(context, 'Erreur inconnue. Réessayez.');
-          }
+        if (state is AuthStateLoggedOut && state.exception != null) {
+          final error = switch (state.exception) {
+            UserNotFoundAuthException => loc.user_not_found,
+            WrongPasswordAuthException => loc.wrong_password,
+            InvalidEmailAuthException => loc.invalid_email,
+            InvalidCredentialAuthException => loc.invalid_credentials,
+            GenericAuthException => loc.generic_error,
+            _ => loc.generic_error,
+          };
+          await showErrorDialog(context, error);
         }
       },
       child: Scaffold(
@@ -65,9 +67,9 @@ class _LoginViewState extends State<LoginView> {
                     height: 100,
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Connectez-vous',
-                    style: TextStyle(
+                  Text(
+                    loc.login_title,
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2E2E2E),
@@ -79,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.email_outlined),
-                      hintText: 'Email',
+                      hintText: loc.email_hint,
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -96,7 +98,9 @@ class _LoginViewState extends State<LoginView> {
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                         onPressed: () {
                           setState(() {
@@ -104,7 +108,7 @@ class _LoginViewState extends State<LoginView> {
                           });
                         },
                       ),
-                      hintText: 'Mot de passe',
+                      hintText: loc.password_hint,
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -129,9 +133,12 @@ class _LoginViewState extends State<LoginView> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      'Se connecter',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    child: Text(
+                      loc.login_button,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -141,9 +148,9 @@ class _LoginViewState extends State<LoginView> {
                         const AuthEventForgotPassword(),
                       );
                     },
-                    child: const Text(
-                      'Mot de passe oublié ?',
-                      style: TextStyle(color: Color(0xFF6C63FF)),
+                    child: Text(
+                      loc.forgot_password,
+                      style: const TextStyle(color: Color(0xFF6C63FF)),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -153,9 +160,9 @@ class _LoginViewState extends State<LoginView> {
                         const AuthEventShouldRegister(),
                       );
                     },
-                    child: const Text(
-                      'Pas encore inscrit ? Créez un compte',
-                      style: TextStyle(color: Colors.black54),
+                    child: Text(
+                      loc.register_redirect,
+                      style: const TextStyle(color: Colors.black54),
                     ),
                   ),
                 ],

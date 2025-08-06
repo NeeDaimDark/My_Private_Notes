@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 import 'generic_dialogs.dart';
 
 Future<void> showErrorDialog(
     BuildContext context,
     String text,
-) async {
-  return showGenericDialog <void> (
+    ) {
+  final loc = AppLocalizations.of(context)!;
+
+  return showGenericDialog<void>(
     context: context,
-    title: 'An Error Occurred',
+    title: loc.error_title,
     content: text,
     optionsBuilder: () => {
-      'OK': null,
+      loc.ok: null,
     },
   );
 }

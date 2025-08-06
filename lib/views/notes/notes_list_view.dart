@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utilities/dialogs/delete_dialog.dart';
 import 'package:Nuvio/services/cloud/cloud_note.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
 
@@ -18,6 +19,8 @@ class NotesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return ListView.separated(
       itemCount: notes.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -34,7 +37,7 @@ class NotesListView extends StatelessWidget {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               title: Text(
-                note.text.trim().isEmpty ? '(Note vide)' : note.text,
+                note.text.trim().isEmpty ? loc.note_empty_text : note.text,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),

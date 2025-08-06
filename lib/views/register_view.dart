@@ -5,6 +5,7 @@ import 'package:Nuvio/services/auth/bloc/auth_bloc.dart';
 import 'package:Nuvio/services/auth/bloc/auth_events.dart';
 import 'package:Nuvio/services/auth/bloc/auth_state.dart';
 import 'package:Nuvio/utilities/dialogs/error_dialog.dart';
+import '../L10n/app_localizations.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -34,18 +35,19 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateRegistering) {
-          if (state.exception is WeakPasswordAuthException) {
-            await showErrorDialog(context, 'Mot de passe trop faible.');
-          } else if (state.exception is EmailAlreadyInUseAuthException) {
-            await showErrorDialog(context, 'Email déjà utilisé.');
-          } else if (state.exception is InvalidEmailAuthException) {
-            await showErrorDialog(context, 'Adresse email invalide.');
-          } else if (state.exception is GenericAuthException) {
-            await showErrorDialog(context, 'Erreur inconnue. Veuillez réessayer.');
-          }
+          final error = switch (state.exception) {
+            WeakPasswordAuthException => loc.weak_password,
+            EmailAlreadyInUseAuthException => loc.email_already_used,
+            InvalidEmailAuthException => loc.register_invalid_email,
+            GenericAuthException => loc.register_generic_error,
+            _ => loc.register_generic_error,
+          };
+          await showErrorDialog(context, error);
         }
       },
       child: Scaffold(
@@ -61,9 +63,9 @@ class _RegisterViewState extends State<RegisterView> {
                   height: 100,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Créer un compte',
-                  style: TextStyle(
+                Text(
+                  loc.register_title,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2E2E2E),
@@ -75,7 +77,7 @@ class _RegisterViewState extends State<RegisterView> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
-                    hintText: 'Email',
+                    hintText: loc.email_hint,
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -100,7 +102,7 @@ class _RegisterViewState extends State<RegisterView> {
                         });
                       },
                     ),
-                    hintText: 'Mot de passe',
+                    hintText: loc.password_hint,
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -125,9 +127,9 @@ class _RegisterViewState extends State<RegisterView> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Créer un compte',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  child: Text(
+                    loc.register_button,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -137,9 +139,9 @@ class _RegisterViewState extends State<RegisterView> {
                       const AuthEventLogOut(),
                     );
                   },
-                  child: const Text(
-                    'Déjà inscrit ? Se connecter',
-                    style: TextStyle(color: Colors.black54),
+                  child: Text(
+                    loc.register_redirect_login,
+                    style: const TextStyle(color: Colors.black54),
                   ),
                 ),
               ],

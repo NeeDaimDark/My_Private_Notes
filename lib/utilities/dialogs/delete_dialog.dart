@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:Nuvio/L10n/app_localizations.dart';
 import 'generic_dialogs.dart';
 
-Future<bool> showDeleteDialog(
-    BuildContext context,
+Future<bool> showDeleteDialog(BuildContext context) {
+  final loc = AppLocalizations.of(context)!;
 
-    )  {
   return showGenericDialog<bool>(
     context: context,
-    title: 'Delete',
-    content: 'Are you sure you want to delete this item ?',
+    title: loc.delete_note_confirmation,
+    content: loc.delete_note_confirmation,
     optionsBuilder: () => {
-      'Cancel': false,
-      'Sure': true,
+      loc.cancel: false,
+      loc.sure: true,
     },
-  )!.then(
-          (value) => value ?? false
-  );
-
+  ).then((value) => value ?? false);
 }
