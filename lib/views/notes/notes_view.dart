@@ -9,9 +9,7 @@ import '../../enums/menu_actiom.dart' show MenuAction;
 import '../../services/auth/bloc/auth_events.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
 import 'package:myprivatenotes/services/cloud/cloud_note.dart';
-import 'package:myprivatenotes/services/cloud/cloud_storage_exceptions.dart';
 import 'package:myprivatenotes/services/cloud/firebase_cloud_storage.dart';
-
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -27,65 +25,66 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _notesService = FirebaseCloudStorage();
-    //_notesService.open();
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('My notes'),
-        backgroundColor: Colors.blue,
+        title: const Text('Mes Notes'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF6C63FF),
         actions: [
           IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pushNamed(CreateOrUpdateNoteRoute);
-
             },
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, size: 26),
           ),
-          PopupMenuButton<MenuAction>(onSelected: (value) async {
-            switch(value){
-              case MenuAction.logout:
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              if (value == MenuAction.logout) {
                 final shouldLogout = await showLogOutDialog(context);
                 devtools.log(shouldLogout.toString());
-                if(shouldLogout){
+                if (shouldLogout) {
                   context.read<AuthBloc>().add(const AuthEventLogOut());
                 }
-
-
-
-            }
-          }, itemBuilder: (context){
-            return const  [
-              PopupMenuItem<MenuAction>(
-                value: MenuAction.logout,
-                child: Text('Log Out'),
-              ),
-            ];
-          },)
+              }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout,
+                  child: Text('Déconnexion'),
+                ),
+              ];
+            },
+          ),
         ],
       ),
       body: StreamBuilder(
         stream: _notesService.allNotes(ownerUserId: userId),
-        builder: (context, snapshot){
-          switch (snapshot.connectionState){
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
             case ConnectionState.waiting:
             case ConnectionState.active:
               if (snapshot.hasData) {
                 final allNotes = snapshot.data as Iterable<CloudNote>;
                 if (allNotes.isEmpty) {
                   return const Center(
-                    child: Text('No notes yet'),
+                    child: Text(
+                      'Aucune note enregistrée pour le moment.',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   );
                 } else {
-                  return NotesListView(notes : allNotes, onDeleteNote: (note) async {
-                    await _notesService.deleteNote(
-                      documentId: note.documentId,
-                    );
-                  },
+                  return NotesListView(
+                    notes: allNotes,
+                    onDeleteNote: (note) async {
+                      await _notesService.deleteNote(documentId: note.documentId);
+                    },
                     onTap: (note) {
                       Navigator.of(context).pushNamed(
                         CreateOrUpdateNoteRoute,
@@ -94,16 +93,14 @@ class _NotesViewState extends State<NotesView> {
                     },
                   );
                 }
-
+              } else {
+                return const Center(child: CircularProgressIndicator());
               }
-              else {
-                return const CircularProgressIndicator();
-              }
-            default :
-              return const CircularProgressIndicator();
+            default:
+              return const Center(child: CircularProgressIndicator());
           }
         },
-      )
+      ),
     );
   }
 }

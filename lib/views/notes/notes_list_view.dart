@@ -4,11 +4,11 @@ import 'package:myprivatenotes/services/cloud/cloud_note.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
 
-
 class NotesListView extends StatelessWidget {
   final Iterable<CloudNote> notes;
   final NoteCallback onDeleteNote;
   final NoteCallback onTap;
+
   const NotesListView({
     super.key,
     required this.notes,
@@ -18,28 +18,37 @@ class NotesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: notes.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         final note = notes.elementAt(index);
-        return ListTile(
-          onTap: () {
-            onTap(note);
-          },
-          title: Text(
-            note.text,
-            maxLines: 1,
-           overflow: TextOverflow.ellipsis,
-            softWrap: true,
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () async {
-              final shouldDelete = await showDeleteDialog(context);
-              if (shouldDelete) {
-                onDeleteNote(note);
-              }
-            },
+        return GestureDetector(
+          onTap: () => onTap(note),
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              title: Text(
+                note.text.trim().isEmpty ? '(Note vide)' : note.text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 16),
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                onPressed: () async {
+                  final shouldDelete = await showDeleteDialog(context);
+                  if (shouldDelete) {
+                    onDeleteNote(note);
+                  }
+                },
+              ),
+            ),
           ),
         );
       },

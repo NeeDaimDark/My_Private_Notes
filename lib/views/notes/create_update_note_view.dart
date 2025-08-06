@@ -50,10 +50,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     if (note == null) return;
     final text = _textController.text;
     if (text != note.text) {
-      _notesService.updateNote(
-        documentId: note.documentId,
-        text: text,
-      );
+      _notesService.updateNote(documentId: note.documentId, text: text);
     }
   }
 
@@ -68,10 +65,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     final note = _note;
     final text = _textController.text;
     if (note != null && text.isNotEmpty) {
-      await _notesService.updateNote(
-        documentId: note.documentId,
-        text: text,
-      );
+      await _notesService.updateNote(documentId: note.documentId, text: text);
     }
   }
 
@@ -96,20 +90,22 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text('New Note'),
+        backgroundColor: const Color(0xFF6C63FF),
+        title: const Text(
+          'Nouvelle note',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
+            icon: const Icon(Icons.share_outlined, color: Colors.white),
             onPressed: () {
               if (_note == null || _textController.text.isEmpty) {
                 showCannotShareEmptyNoteDialog(context);
               } else {
-                Share.share(
-                  _textController.text,
-                  subject: 'Check out this note!',
-                );
+                Share.share(_textController.text, subject: 'Check out this note!');
               }
             },
           ),
@@ -121,14 +117,32 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               _setupTextControllerListener();
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _textController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(
-                    hintText: 'Type your note here...',
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    controller: _textController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    style: const TextStyle(fontSize: 18),
+                    decoration: InputDecoration(
+                      hintText: 'Écrivez votre note ici...',
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.all(16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
+                      ),
+                    ),
                   ),
                 ),
               );

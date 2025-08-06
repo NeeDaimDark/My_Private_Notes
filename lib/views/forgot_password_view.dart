@@ -16,72 +16,124 @@ class ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   late final TextEditingController _controller;
+
   @override
   void initState() {
     _controller = TextEditingController();
     super.initState();
   }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-        listener: (context,state) async{
-      if (state is AuthStateForgotPassword) {
-        if(state.hasSentEmail){
-          _controller.clear();
-          await showPasswordResetEmailSentDialog(context);
+      listener: (context, state) async {
+        if (state is AuthStateForgotPassword) {
+          if (state.hasSentEmail) {
+            _controller.clear();
+            await showPasswordResetEmailSentDialog(context);
+          }
+          if (state.exception != null) {
+            await showErrorDialog(
+              context,
+              'Impossible de traiter votre demande. Veuillez vérifier que vous êtes un utilisateur inscrit.',
+            );
+          }
         }
-        if (state.exception !=null){
-          await showErrorDialog(
-            context,
-            'We could not process your request. Please make sure that you are a registered user.',
-          );
-        }
-      }
-        },
+      },
       child: Scaffold(
-         appBar: AppBar(title: const Text('forgot password'),
-
+        backgroundColor: const Color(0xFFF9FAFB),
+        appBar: AppBar(
+          title: const Text('Mot de passe oublié'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF6C63FF),
         ),
-        body:  Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Text('if you forgot your password, enter your email and we will send you a password reset link.'),
-                TextField(
-                  controller: _controller,
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
-                  autofocus: true,
-                  enableSuggestions: false,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your email here',
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_outline, size: 80, color: Color(0xFF6C63FF)),
+              const SizedBox(height: 24),
+              const Text(
+                'Réinitialiser le mot de passe',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Entrez votre adresse e-mail ci-dessous. Un lien de réinitialisation vous sera envoyé.',
+                style: TextStyle(fontSize: 16, color: Color(0xFF4B5563)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              TextField(
+                controller: _controller,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                autofocus: true,
+                enableSuggestions: false,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: 'Email',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-                TextButton(
-                    onPressed: (){
-                      final email = _controller.text;
-                      context.read<AuthBloc>().add(AuthEventForgotPassword(email: email));
-
-                    },
-                    child: const Text('Send me a password reset link'),
-                ),
-                TextButton(
-                  onPressed: ()
-                  {
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final email = _controller.text;
                     context.read<AuthBloc>().add(
-                        const AuthEventLogOut(),
+                      AuthEventForgotPassword(email: email),
                     );
-                    },
-                  child: const Text('back to login'),
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6C63FF),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Envoyer le lien de réinitialisation',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
-              ],
-            ),
-        )
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    const AuthEventLogOut(),
+                  );
+                },
+                child: const Text(
+                  'Retour à la connexion',
+                  style: TextStyle(
+                    color: Color(0xFF6C63FF),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
